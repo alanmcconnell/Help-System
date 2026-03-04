@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+  Copyright (c) 2026 Great Lakes Heritage, LLC
+  All rights reserved.
+-->
+<!--
+  INSTALL: Copy to your web app client folder (same level as other .html pages).
+  DEPENDENCIES (must already exist in your client/lib/ folder):
+    lib/menu.css, lib/menu.js, lib/JWT-Tokens-Client.js,
+    lib/role-permissions.js, lib/acm_Prompts.js, lib/_config.js
+-->
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Editor</title>
+    <link rel="stylesheet" href="lib/menu.css">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { background-color: white; color: black; font-family: Arial, sans-serif; }
+        body.dark-mode-25, body.dark-mode-50, body.dark-mode-75 { color: white; }
+        #menu-container { z-index: 1000; position: relative; }
+        .container { display: flex; max-width: 1400px; margin: 20px auto; padding: 20px; gap: 20px; }
+        .left-panel { flex: 0 0 280px; }
+        .right-panel { flex: 1; }
+        .data-grid { border: 1px solid #ccc; max-height: calc(100vh - 220px); overflow-y: auto; background: white; }
+        .grid-header { background: #007bff; color: white; padding: 10px; font-weight: bold; }
+        .grid-row { padding: 8px 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .grid-row:hover { background: #f0f0f0; }
+        .grid-row.selected { background: #007bff; color: white; }
+        .form-field { margin: 10px 0; }
+        .form-field label { display: inline-block; width: 140px; font-weight: bold; vertical-align: top; }
+        .form-field input, .form-field select, .form-field textarea { width: 350px; padding: 5px; border: 1px solid #ccc; font-family: inherit; }
+        .form-field textarea { height: 120px; resize: vertical; }
+        #section_text_editor, #client_text_editor { width: 100%; min-height: 120px; background: white; box-sizing: border-box; }
+        #section_text_editor .ql-editor, #client_text_editor .ql-editor { min-height: 100px; font-family: inherit; font-size: 14px; }
+        .ql-font-arial { font-family: Arial, sans-serif; }
+        .ql-font-courier { font-family: 'Courier New', monospace; }
+        .ql-font-georgia { font-family: Georgia, serif; }
+        .ql-font-tahoma { font-family: Tahoma, sans-serif; }
+        .ql-font-times { font-family: 'Times New Roman', serif; }
+        .ql-font-verdana { font-family: Verdana, sans-serif; }
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value]::before { content: attr(data-value); text-transform: capitalize; }
+        .ql-snow .ql-picker.ql-size .ql-picker-label[data-value]::before,
+        .ql-snow .ql-picker.ql-size .ql-picker-item[data-value]::before { content: attr(data-value); }
+        .form-field .quill-wrap { display: inline-block; width: calc(100% - 148px); vertical-align: top; }
+        .sections-list { border: 1px solid #ccc; max-height: 300px; overflow-y: auto; margin: 10px 0; }
+        .section-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .section-row:hover { background: #f0f0f0; }
+        .section-row.selected { background: #007bff; color: white; }
+        .section-row button { background: #d3d3d3; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 12px; }
+        .buttons { margin: 15px 0; }
+        button { background-color: #d3d3d3; color: black; padding: 8px 16px; border: none; cursor: pointer; margin: 0 4px; border-radius: 8px; }
+        button:hover { background-color: #c0c0c0; }
+        h2 { margin: 0 0 10px 0; }
+        hr { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
+        @media (max-width: 768px) { .container { flex-direction: column; } .left-panel { flex: 1; } }
+    </style>
+</head>
+<body>
+    <div id="menu-container"></div>
+    <div class="container">
+        <div class="left-panel">
+            <div class="data-grid">
+                <div class="grid-header">Pages</div>
+                <div id="pagesGrid"></div>
+            </div>
+            <div class="buttons">
+                <button id="addPageBtn">Add Page</button>
+                <button id="deletePageBtn">Delete Page</button>
+            </div>
+        </div>
+        <div class="right-panel">
+            <h2>Page Help Content</h2>
+            <div class="form-field">
+                <label>Page Key:</label>
+                <input type="text" id="page_key" placeholder="e.g. accession-document">
+            </div>
+            <div class="buttons">
+                <button id="savePageBtn">Save Page</button>
+            </div>
+            <hr>
+            <h2>Sections</h2>
+            <div class="sections-list" id="sectionsList"></div>
+            <div class="buttons">
+                <button id="addSectionBtn">Add Section</button>
+            </div>
+            <div id="sectionForm" style="display:none; margin-top:10px;">
+                <div class="form-field">
+                    <label>Display Order:</label>
+                    <input type="number" id="display_order" value="0" style="width:80px;">
+                    <small style="display:block;margin-left:140px;color:#666;font-size:11px;">(100 - Is about the web page, 200 - Inputs on the web page, 300 - Buttons (Add, Delete, Save, Cancel), 400 - Links to other web pages)</small>
+                </div>
+                <div class="form-field">
+                    <label>Title:</label>
+                    <input type="text" id="section_title">
+                </div>
+                <div class="form-field">
+                    <label>Section Text:</label>
+                    <div class="quill-wrap"><div id="section_text_editor"></div></div>
+                </div>
+                <div class="form-field">
+                    <label>Client Text:</label>
+                    <div class="quill-wrap"><div id="client_text_editor"></div></div>
+                </div>
+                <div class="form-field">
+                    <label>URL to the video<br>content:</label>
+                    <input type="text" id="video_content" placeholder="filename.mp4 or https://...">
+                    <small style="display:block;margin-left:140px;color:#666;font-size:11px;">Enter just the filename (e.g. demo.mp4) for local videos, or a full https:// URL.</small>
+                </div>
+                <div class="buttons">
+                    <button id="saveSectionBtn">Save Section</button>
+                    <button id="cancelSectionBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <script src="lib/JWT-Tokens-Client.js"></script>
+    <script src="lib/menu.js"></script>
+    <script src="lib/role-permissions.js"></script>
+    <script src="lib/acm_Prompts.js"></script>
+    <script src="lib/_config.js"></script>
+    <script src="help-editor.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+Topic: Help System.
+This includes the 'Help' menu item and the help-editor.html / help-editor.js web page.
+Do not change of the existing code or  design in the current Help System.
+Place all files you create in this parent folder: C:\home\shared\repos\GLH_collections\dev01-alan\docs\Help-System\Code
+
+You are to build the a new copy of the Help System that will be a plug-and-play install. All the programmer has to do is copy files and place them in the correct web app folders.
+You will need to modify the code to do this.
+In the parent folder place the code in one of these folders:
+    You will need to create the sub-folders: (if another folder is needed, create it).
+         Client, Client Lib, Server, Server Lib, endpoint.

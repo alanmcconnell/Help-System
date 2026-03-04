@@ -1,0 +1,94 @@
+/*
+  Copyright (c) 2026 Great Lakes Heritage, LLC
+  All rights reserved.
+
+  FILE: help-panel.css  (Client Lib folder)
+
+  INSTALL INSTRUCTIONS
+  --------------------
+  Option A — Standalone (menu.css does NOT already have help panel styles):
+    Add this line to every HTML page:
+      <link rel="stylesheet" href="lib/help-panel.css">
+
+  Option B — Merge into existing menu.css:
+    Copy the rules below into your menu.css file.
+*/
+
+/* Help panel slide-in */
+#helpPanel {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    height: 100%;
+    background: white;
+    border-left: 2px solid #007bff;
+    z-index: 20000;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s ease;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.2);
+}
+#helpPanel.open { right: 0; }
+
+#helpPanelHeader {
+    background: #007bff;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+}
+#helpPanelContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 16px;
+    color: black;
+}
+
+/* Section styles */
+.help-section { margin-bottom: 20px; }
+.help-section-title {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    color: #003399;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+.help-section-title:hover { color: #0055cc; }
+.help-toggle { font-size: 11px; margin-right: 5px; }
+.help-section-body { margin-bottom: 8px; }
+
+/* Red triangle divider between section_text and client_text */
+.help-divider {
+    color: red;
+    font-size: 14px;
+    text-align: left;
+    margin: 6px 0;
+    line-height: 1;
+    letter-spacing: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Video link */
+.help-video-link { margin-top: 8px; }
+.help-video-link a { color: #003399; text-decoration: none; font-size: 14px; }
+.help-video-link a:hover { text-decoration: underline; }
+
+/* Footer buttons */
+#helpPanelFooter {
+    padding: 10px 16px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+#helpPanelFooter button {
+    background-color: #d3d3d3;
+    color: black;
+    padding: 8px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+#helpPanelFooter button:hover { background-color: #c0c0c0; }
